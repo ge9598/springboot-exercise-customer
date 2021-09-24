@@ -4,6 +4,7 @@ import com.xiaoge.springbootdemo.customer.Pojo.Customer;
 import com.xiaoge.springbootdemo.customer.exception.UserNotFoundException;
 import com.xiaoge.springbootdemo.customer.repository.CustomerRepository;
 import com.xiaoge.springbootdemo.customer.response.ErrorResponse;
+import com.xiaoge.springbootdemo.customer.response.PageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,13 @@ public class CustomerController {
 //        return new ResponseEntity<>(cList, HttpStatus.OK);
 //    }
     @GetMapping
-    public ResponseEntity<List<Customer>> getCustomerAll(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                                                         @RequestParam(value = "rows", required = false, defaultValue = "5") int rowsPerPage,
-                                                         @RequestParam(value = "orderby", required = false, defaultValue = "name") String order){
-        log.debug("page{} , rows{} , order{} ", page, rowsPerPage, order);
-        List<Customer> cList = customerRepository.getAllCustomer();
-        return new ResponseEntity<>(cList, HttpStatus.OK);
+    public ResponseEntity<PageResponse> getCustomerAll(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                                       @RequestParam(value = "rows", required = false, defaultValue = "5") int rowsPerPage,
+                                                       @RequestParam(value = "orderby", required = false, defaultValue = "name") String order){
+        log.debug("page {} , rows {} , order {} ", page, rowsPerPage, order);
+        PageResponse response = customerRepository.getAllCustomerByPage(page, rowsPerPage, order);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "{cid}")

@@ -1,11 +1,13 @@
 package com.xiaoge.springbootdemo.customer.repository;
 import com.xiaoge.springbootdemo.customer.Pojo.Customer;
 import com.xiaoge.springbootdemo.customer.exception.UserNotFoundException;
+import com.xiaoge.springbootdemo.customer.response.PageResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class CustomerRepository {
@@ -45,5 +47,21 @@ public class CustomerRepository {
 
     public List<Customer> getAllCustomer() {
         return this.customers;
+    }
+
+    public PageResponse getAllCustomerByPage(int page, int rowsPerPage, String order) {
+
+        List<Customer> result = customers.stream().sorted((o1, o2) ->{
+            if(order.equals("name")){
+                return o1.getFirstName().compareTo(o2.getFirstName());
+            }else if (order.equals("age")){
+                return o1.getAge() - o2.getAge();
+            }return 0;
+        }).skip(rowsPerPage * (page - 1)).limit(rowsPerPage).collect(Collectors.toList());
+        PageResponse resp = new PageResponse();
+        resp.setData(result);
+        resp.setTotalRows(this.customers.size());
+        resp.setPageNum(page);
+        return resp;
     }
 }
